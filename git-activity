@@ -1,0 +1,79 @@
+#!/bin/zsh
+
+COMMAND=${0:A:t}
+
+function get_activity () {
+    parse_args $@
+    get_page "${PAGE_URL}" | extract_commit_counts | limit_commit_counts "${COMMIT_COUNT}"
+}
+
+function help () {
+    cat <<EOF
+${COMMAND} [OPTIONS] URL
+
+This gets the commit activity for the github page provided.
+
+OPTIONS:
+    -l COUNT
+    --limit COUNT
+        Limit commits to the last COUNT days.
+EOF
+}
+
+function error () {
+    printf "%s\n" $@ >&2
+    exit 1
+}
+
+function parse_args () {
+    local -a count
+    local -a help
+    local url
+
+    zparseopts -D l:=count -limit:=count h=help -help=help
+
+    if [ $#help -gt 0 ]
+    then
+        help
+        exit
+    fi
+
+    if [ $#count -gt 0 ]
+    then
+        COMMIT_COUNT=${count[2]}
+    fi
+
+    if [ $#@ -le 0 ]
+    then
+        error "You must provide a URL"
+    fi
+
+    url=$1
+    if [[ ! "${url}" =~ "^https?://" ]]
+    then
+        PAGE_URL="https://github.com/${url}"
+    else
+        PAGE_URL=${url}
+    fi
+}
+
+function get_page () {
+    curl --silent "$1"
+}
+
+function extract_commit_counts () {
+    xmllint --html --xpath '//g/rect/@data-count' - 2>/dev/null | sed -e 's/data-count=//g' -e 's/"//g' -e 's/ /\n/g'
+}
+
+function limit_commit_counts () {
+    if [ "${1}" != "" ]
+    then
+        tail -n ${1}
+    else
+        cat -
+    fi
+}
+
+get_activity $@
+
+# vim: set ai et sw=4 syntax=zsh :
