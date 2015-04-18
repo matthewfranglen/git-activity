@@ -2,6 +2,8 @@
 
 COMMAND=${0:A:t}
 
+set -o pipefail
+
 function get_activity () {
     validate_computer
     parse_args $@
