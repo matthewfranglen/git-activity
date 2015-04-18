@@ -3,6 +3,7 @@
 COMMAND=${0:A:t}
 
 function get_activity () {
+    validate_computer
     parse_args $@
     get_page "${PAGE_URL}" | extract_commit_counts | limit_commit_counts "${COMMIT_COUNT}"
 }
@@ -23,6 +24,13 @@ EOF
 function error () {
     printf "%s\n" $@ >&2
     exit 1
+}
+
+function validate_computer () {
+    if ! which xmllint >/dev/null
+    then
+        error "xmllint is not available"
+    fi
 }
 
 function parse_args () {
