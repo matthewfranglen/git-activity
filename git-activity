@@ -31,6 +31,10 @@ function validate_computer () {
     then
         error "xmllint is not available"
     fi
+    if ! which curl >/dev/null
+    then
+        error "curl is not available"
+    fi
 }
 
 function parse_args () {
