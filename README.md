@@ -1,14 +1,14 @@
 Git Activity
 ============
 
-git-activity [OPTIONS] URL
-
 This gets the commit activity for the github page provided.
 
-OPTIONS:
-  -l COUNT
-  --limit COUNT
-    Limit commits to the last COUNT days.
+    git-activity [OPTIONS] URL
+
+    OPTIONS:
+        -l COUNT
+        --limit COUNT
+            Limit commits to the last COUNT days.
 
 Examples
 --------
